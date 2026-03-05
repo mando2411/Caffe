@@ -130,7 +130,7 @@ return [
 
     'qr' => [
         'title' => 'THE AMAZON FOREST | تجربة داخل الكافيه',
-        'welcome' => 'welcome to the amazon forest',
+        'welcome' => 'حياكم الله في THE AMAZON FOREST',
         'subtitle' => 'اختر خدمتك الآن بكل سهولة',
         'open_menu' => 'فتح المينيو',
         'call_waiter' => 'طلب الويتر',
