@@ -136,6 +136,43 @@
             display: grid;
             gap: 0.9rem;
             grid-template-columns: repeat(2, minmax(0, 1fr));
+            position: relative;
+        }
+
+        .qr-fallback-grid.is-loading .qr-fallback-btn {
+            opacity: 0.2;
+            transform: none;
+        }
+
+        .qr-skeleton-layer {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.9rem;
+            z-index: 3;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 180ms ease;
+        }
+
+        .qr-fallback-grid.is-loading .qr-skeleton-layer {
+            opacity: 1;
+        }
+
+        .qr-skeleton-item {
+            display: block;
+            min-height: 56px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: linear-gradient(
+                110deg,
+                rgba(255, 255, 255, 0.08) 8%,
+                rgba(255, 255, 255, 0.24) 20%,
+                rgba(255, 255, 255, 0.08) 34%
+            );
+            background-size: 220% 100%;
+            animation: qr-skeleton-shimmer 1.05s linear infinite;
         }
 
         .qr-fallback-btn {
@@ -209,10 +246,19 @@
                 font-size: 0.7rem;
             }
 
+            .qr-skeleton-layer {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
             .qr-fallback-btn {
                 min-height: 52px;
                 font-size: 0.95rem;
                 padding-inline: 0.85rem;
+            }
+
+            .qr-skeleton-item {
+                min-height: 52px;
             }
         }
 
@@ -223,6 +269,15 @@
             }
             50% {
                 text-shadow: 0 0 42px rgba(235, 192, 69, 0.75);
+            }
+        }
+
+        @keyframes qr-skeleton-shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
             }
         }
     </style>
@@ -243,7 +298,15 @@
                 <button type="button" class="qr-layout-btn" data-layout-mode="3">{{ __('messages.qr.layout_3') }}</button>
             </div>
 
-            <div class="qr-fallback-grid">
+            <div class="qr-fallback-grid" id="qrActionGrid">
+                <div class="qr-skeleton-layer" aria-hidden="true">
+                    <span class="qr-skeleton-item"></span>
+                    <span class="qr-skeleton-item"></span>
+                    <span class="qr-skeleton-item"></span>
+                    <span class="qr-skeleton-item"></span>
+                    <span class="qr-skeleton-item qr-span-2"></span>
+                </div>
+
                 <a href="{{ route('menu') }}" class="qr-fallback-btn" id="qrOpenMenuBtn">{{ __('messages.qr.open_menu') }}</a>
                 <a href="tel:+966500000000" class="qr-fallback-btn">{{ __('messages.qr.call_waiter') }}</a>
                 <a href="https://wa.me/966500000000?text={{ urlencode(__('messages.qr.order_online')) }}" class="qr-fallback-btn" target="_blank" rel="noopener noreferrer">{{ __('messages.qr.order_online') }}</a>
@@ -271,6 +334,7 @@
             const stage = document.getElementById('qrLandingStage');
             const openMenuButton = document.getElementById('qrOpenMenuBtn');
             const switcher = document.getElementById('qrLayoutSwitcher');
+            const actionGrid = document.getElementById('qrActionGrid');
 
             if (!stage) {
                 return;
@@ -285,6 +349,17 @@
             }
 
             const buttons = Array.from(switcher.querySelectorAll('[data-layout-mode]'));
+
+            const setLoadingState = function (isLoading) {
+                if (!actionGrid) {
+                    return;
+                }
+
+                actionGrid.classList.toggle('is-loading', isLoading);
+                buttons.forEach(function (button) {
+                    button.disabled = isLoading;
+                });
+            };
 
             const setActiveMode = function (mode) {
                 buttons.forEach(function (button) {
@@ -310,6 +385,8 @@
             buttons.forEach(function (button) {
                 button.addEventListener('click', function () {
                     const mode = Number(button.dataset.layoutMode || '1');
+                    const startedAt = Date.now();
+                    setLoadingState(true);
 
                     fetch(`{{ url('/qr/menu-layout') }}/${mode}`, {
                         headers: {
@@ -328,6 +405,14 @@
                         })
                         .catch(function () {
                             applyMode(mode);
+                        })
+                        .finally(function () {
+                            const elapsed = Date.now() - startedAt;
+                            const remaining = Math.max(0, 420 - elapsed);
+
+                            window.setTimeout(function () {
+                                setLoadingState(false);
+                            }, remaining);
                         });
                 });
             });
