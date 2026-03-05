@@ -304,3 +304,39 @@ Entry #N — [عنوان التعديل]
 - النتيجة:
 	- التطبيق لن يسقط 500 بسبب غياب build assets.
 	- تظهر رسالة توجيهية بدل الانهيار إلى أن يتم رفع الأصول المبنية.
+
+12) Entry #6 — إصلاح 404 للصورة /images/Menu.png على السيرفر
+- الهدف:
+	- حل خطأ 404 للصورة الرئيسية في الصفحة Home عند الرابط:
+		- /images/Menu.png
+
+- الملف/الملفات المتأثرة:
+	1) routes/web.php
+	2) resources/views/home.blade.php
+
+- التغييرات الدقيقة:
+	- إضافة route جديد باسم menu.image على نفس المسار /images/Menu.png.
+	- route يبحث عن الصورة في أكثر من مكان (fallback candidates):
+		- public_path('images/Menu.png')
+		- base_path('images/Menu.png')
+		- resource_path('assets/Menu.png')
+	- عند إيجاد الملف يتم إرساله عبر response()->file(...).
+	- عند عدم الوجود في كل المسارات: abort(404).
+	- في home.blade.php تم استبدال src من asset('images/Menu.png') إلى route('menu.image').
+
+- المتغيرات/الدوال الجديدة أو المعدّلة:
+	- $candidates (array) في route closure
+	- foreach ($candidates as $path)
+	- response()->file($path)
+	- route name: menu.image
+
+- السبب الفني:
+	- بعض إعدادات الاستضافة (خصوصًا عند عدم مثالية Document Root) قد تفشل في تقديم static assets مباشرة من نفس المسار.
+	- fallback route يضمن وصول الصورة حتى لو static serving غير متوافق.
+
+- الأوامر التي نُفذت للتحقق:
+	- php artisan route:list
+
+- النتيجة:
+	- route /images/Menu.png أصبح مسجّلًا رسميًا كـ menu.image.
+	- الصفحة الرئيسية أصبحت تستخدم المسار المضمون route('menu.image').

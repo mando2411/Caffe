@@ -40,7 +40,7 @@
                 <div class="orb orb-gold"></div>
                 <div class="orb orb-blue"></div>
                 <div class="glass-card p-5 sm:p-7">
-                    <img src="{{ asset('images/Menu.png') }}" alt="The Amazon Forest menu preview" class="menu-preview">
+                    <img src="{{ route('menu.image') }}" alt="The Amazon Forest menu preview" class="menu-preview">
                 </div>
             </div>
         </div>
