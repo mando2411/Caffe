@@ -743,3 +743,34 @@ Entry #N — [عنوان التعديل]
 
 - النتيجة:
 	- الموقع يستخدم أيقونة قهوة كـ favicon بشكل متوافق.
+
+25) Entry #19 — تثبيت ظهور favicon مع كسر الكاش
+- الهدف:
+	- حل مشكلة أن الأيقونة لا تظهر رغم إضافتها.
+
+- الملف/الملفات المتأثرة:
+	1) routes/web.php
+	2) resources/views/layouts/cafe.blade.php
+
+- التغييرات الدقيقة:
+	- إضافة routes مباشرة للأيقونة:
+		- /favicon.ico  (name: favicon.ico)
+		- /favicon.svg  (name: favicon.svg)
+	- كل route يرسل الملف مع headers تمنع الكاش القوي (no-store/no-cache).
+	- في layout:
+		- إضافة `$faviconVersion = filemtime(public/favicon.ico)`
+		- ربط أيقونات head بروابط versioned:
+			- route('favicon.svg', ['v' => $faviconVersion])
+			- route('favicon.ico', ['v' => $faviconVersion])
+			- shortcut icon كذلك
+
+- السبب الفني:
+	- المتصفحات تَكاش الفافيكون بقوة، فحتى بعد التحديث قد تستمر بعرض الأيقونة القديمة.
+	- إضافة version + no-cache يفرض تحميل الأيقونة الجديدة.
+
+- التحقق:
+	- php artisan route:list --path=fav
+	- ظهرت route favicon.ico وfavicon.svg بنجاح.
+
+- النتيجة:
+	- أيقونة القهوة تظهر بشكل موثوق بعد تحديث السيرفر والمتصفح.

@@ -33,6 +33,34 @@ Route::get('/images/Menu.png', function () {
 	abort(404);
 })->name('menu.image');
 
+Route::get('/favicon.ico', function () {
+	$path = public_path('favicon.ico');
+
+	if (! file_exists($path)) {
+		abort(404);
+	}
+
+	return response()->file($path, [
+		'Content-Type' => 'image/x-icon',
+		'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+		'Pragma' => 'no-cache',
+	]);
+})->name('favicon.ico');
+
+Route::get('/favicon.svg', function () {
+	$path = public_path('favicon.svg');
+
+	if (! file_exists($path)) {
+		abort(404);
+	}
+
+	return response()->file($path, [
+		'Content-Type' => 'image/svg+xml',
+		'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+		'Pragma' => 'no-cache',
+	]);
+})->name('favicon.svg');
+
 Route::get('/assets/app.css', function () {
 	$candidates = [
 		public_path('fallback/app.css'),

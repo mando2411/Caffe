@@ -8,14 +8,18 @@
         $fallbackJsVersion = file_exists(public_path('fallback/app.js'))
             ? filemtime(public_path('fallback/app.js'))
             : time();
+        $faviconVersion = file_exists(public_path('favicon.ico'))
+            ? filemtime(public_path('favicon.ico'))
+            : time();
     @endphp
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>@yield('title', __('messages.meta.title_suffix'))</title>
         <meta name="description" content="{{ __('messages.meta.description') }}">
-        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+        <link rel="icon" type="image/svg+xml" href="{{ route('favicon.svg', ['v' => $faviconVersion]) }}">
+        <link rel="icon" type="image/x-icon" href="{{ route('favicon.ico', ['v' => $faviconVersion]) }}">
+        <link rel="shortcut icon" type="image/x-icon" href="{{ route('favicon.ico', ['v' => $faviconVersion]) }}">
 
         @if ($hasViteBuild)
             @vite(['resources/css/app.css', 'resources/js/app.js'])
