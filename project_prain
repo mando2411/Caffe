@@ -418,6 +418,73 @@ Entry #N — [عنوان التعديل]
 	- fallback الأصول أصبح مستقلًا عن static server behavior.
 	- الصفحة لن تظل مكسورة بسبب 404 للأصول الأساسية.
 
+16) Entry #10 — تعريب سعودي كامل + سويتشر تبديل اللغات
+- الهدف:
+	- جعل العربية السعودية هي اللغة الافتراضية الكاملة للواجهة.
+	- إضافة سويتشر لتبديل اللغة بين العربية والإنجليزية.
+
+- الملف/الملفات المتأثرة:
+	1) config/app.php
+	2) .env
+	3) .env.example
+	4) app/Http/Middleware/SetLocale.php (جديد)
+	5) bootstrap/app.php
+	6) routes/web.php
+	7) lang/ar_SA/messages.php (جديد)
+	8) lang/en/messages.php (جديد)
+	9) resources/views/layouts/cafe.blade.php
+	10) resources/views/home.blade.php
+	11) resources/views/menu.blade.php
+
+- التغييرات الدقيقة:
+	- ضبط locale الافتراضي إلى ar_SA (Config + Env).
+	- ضبط fallback_locale إلى ar_SA لضمان تعريب كامل افتراضيًا.
+	- إنشاء Middleware `SetLocale` لقراءة اللغة من session وتطبيقها على كل طلب.
+	- تسجيل middleware داخل web stack في bootstrap/app.php.
+	- إضافة Route `language/{locale}` باسم `language.switch`.
+	- إنشاء ملفات ترجمة منظمة شاملة لكل النصوص في الواجهة:
+		- العربي السعودي: lang/ar_SA/messages.php
+		- الإنجليزي: lang/en/messages.php
+	- تحويل النصوص الثابتة في Layout/Home/Menu إلى مفاتيح ترجمة.
+	- إضافة سويتشر لغة (Desktop + Mobile) في Header.
+	- جعل `lang` و`dir` في `<html>` يتغيران تلقائيًا حسب locale.
+
+- المتغيرات/الدوال الجديدة أو المعدّلة:
+	- Middleware variables:
+		- $supportedLocales = ['ar_SA', 'en']
+		- $defaultLocale = config('app.locale', 'ar_SA')
+		- $locale = session('app_locale', ...)
+	- Route language.switch:
+		- parameter: {locale}
+		- session key: app_locale
+	- Blade dynamic direction:
+		- app()->getLocale()
+		- str_starts_with(app()->getLocale(), 'ar')
+
+- السبب الفني:
+	- ضمان واجهة عربية سعودية بالكامل بشكل افتراضي.
+	- توفير تبديل لغة مباشر بدون كسر التصميم أو المسارات.
+
+- الأوامر التي نُفذت للتحقق:
+	- php artisan route:list --path=language
+	- npm run build
+
+- النتيجة:
+	- العربية السعودية أصبحت الافتراضية.
+	- يمكن التبديل بين العربية والإنجليزية من السويتشر في الهيدر.
+	- كل النصوص الأساسية أصبحت قابلة للترجمة مركزيًا.
+
+17) Entry #11 — تحسين fallback الأصول بعد الترجمة
+- الهدف:
+	- ضمان أن fallback CSS/JS يطابق آخر نسخة بعد التعديلات اللغوية.
+
+- التغييرات:
+	- تحديث routes/web.php ليبحث أولًا في build ثم fallback.
+	- تحديث public/fallback/app.css و public/fallback/app.js من آخر build.
+
+- النتيجة:
+	- لا يتم استخدام CSS قديم إذا build متوفر.
+
 15) Entry #9 — إضافة اللغة العربية وجعلها الافتراضية
 - الهدف:
 	- تفعيل اللغة العربية كلغة افتراضية للتطبيق.

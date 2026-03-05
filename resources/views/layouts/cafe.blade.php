@@ -6,8 +6,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>@yield('title', 'The Amazon Forest Cafe')</title>
-        <meta name="description" content="The Amazon Forest Cafe - Premium coffee, tea, mojito, and desserts with a rich jungle-inspired identity.">
+        <title>@yield('title', __('messages.meta.title_suffix'))</title>
+        <meta name="description" content="{{ __('messages.meta.description') }}">
 
         @if ($hasViteBuild)
             @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -25,8 +25,8 @@
                 <a href="{{ route('home') }}" class="group inline-flex items-center gap-3">
                     <span class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#EBC045]/50 bg-[#032E51] text-[#EBC045] shadow-[0_0_20px_rgba(235,192,69,0.15)]">☕</span>
                     <span class="leading-tight">
-                        <strong class="block text-sm tracking-[0.26em] text-[#EBC045]">THE AMAZON FOREST</strong>
-                        <span class="text-xs text-slate-300/90">Cafe & Signature Drinks</span>
+                        <strong class="block text-sm tracking-[0.26em] text-[#EBC045]">{{ __('messages.brand.name') }}</strong>
+                        <span class="text-xs text-slate-300/90">{{ __('messages.brand.subtitle') }}</span>
                     </span>
                 </a>
 
@@ -35,18 +35,27 @@
                 </button>
 
                 <nav id="main-nav" class="hidden items-center gap-2 md:flex">
-                    <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">الرئيسية</a>
-                    <a href="{{ route('menu') }}" class="nav-link {{ request()->routeIs('menu') ? 'active' : '' }}">المنيو</a>
-                    <a href="{{ route('home') }}#about" class="nav-link">عن الكافيه</a>
-                    <a href="{{ route('home') }}#contact" class="nav-link">تواصل</a>
+                    <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">{{ __('messages.nav.home') }}</a>
+                    <a href="{{ route('menu') }}" class="nav-link {{ request()->routeIs('menu') ? 'active' : '' }}">{{ __('messages.nav.menu') }}</a>
+                    <a href="{{ route('home') }}#about" class="nav-link">{{ __('messages.nav.about') }}</a>
+                    <a href="{{ route('home') }}#contact" class="nav-link">{{ __('messages.nav.contact') }}</a>
+                    <div class="inline-flex items-center gap-1 rounded-xl border border-white/15 bg-white/5 px-2 py-1">
+                        <a href="{{ route('language.switch', ['locale' => 'ar_SA']) }}" class="rounded-lg px-2 py-1 text-xs transition {{ app()->getLocale() === 'ar_SA' ? 'bg-[#EBC045] text-[#102236]' : 'text-slate-200 hover:bg-white/10' }}">{{ __('messages.language.arabic') }}</a>
+                        <a href="{{ route('language.switch', ['locale' => 'en']) }}" class="rounded-lg px-2 py-1 text-xs transition {{ app()->getLocale() === 'en' ? 'bg-[#EBC045] text-[#102236]' : 'text-slate-200 hover:bg-white/10' }}">{{ __('messages.language.english') }}</a>
+                    </div>
                 </nav>
             </div>
 
             <nav id="mobile-nav" class="mx-4 mb-4 hidden rounded-2xl border border-white/10 bg-[#052038]/95 p-3 md:hidden">
-                <a href="{{ route('home') }}" class="mobile-nav-link">الرئيسية</a>
-                <a href="{{ route('menu') }}" class="mobile-nav-link">المنيو</a>
-                <a href="{{ route('home') }}#about" class="mobile-nav-link">عن الكافيه</a>
-                <a href="{{ route('home') }}#contact" class="mobile-nav-link">تواصل</a>
+                <a href="{{ route('home') }}" class="mobile-nav-link">{{ __('messages.nav.home') }}</a>
+                <a href="{{ route('menu') }}" class="mobile-nav-link">{{ __('messages.nav.menu') }}</a>
+                <a href="{{ route('home') }}#about" class="mobile-nav-link">{{ __('messages.nav.about') }}</a>
+                <a href="{{ route('home') }}#contact" class="mobile-nav-link">{{ __('messages.nav.contact') }}</a>
+                <div class="mt-2 flex items-center gap-2 px-2">
+                    <span class="text-xs text-slate-300">{{ __('messages.language.label') }}:</span>
+                    <a href="{{ route('language.switch', ['locale' => 'ar_SA']) }}" class="rounded-lg px-2 py-1 text-xs transition {{ app()->getLocale() === 'ar_SA' ? 'bg-[#EBC045] text-[#102236]' : 'text-slate-200 hover:bg-white/10' }}">{{ __('messages.language.arabic') }}</a>
+                    <a href="{{ route('language.switch', ['locale' => 'en']) }}" class="rounded-lg px-2 py-1 text-xs transition {{ app()->getLocale() === 'en' ? 'bg-[#EBC045] text-[#102236]' : 'text-slate-200 hover:bg-white/10' }}">{{ __('messages.language.english') }}</a>
+                </div>
             </nav>
         </header>
 
@@ -57,26 +66,26 @@
         <footer id="contact" class="mt-20 border-t border-white/10 bg-[#02121f]/90">
             <div class="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-3 lg:px-8">
                 <div>
-                    <h3 class="mb-3 text-sm tracking-[0.24em] text-[#EBC045]">THE AMAZON FOREST</h3>
+                    <h3 class="mb-3 text-sm tracking-[0.24em] text-[#EBC045]">{{ __('messages.brand.name') }}</h3>
                     <p class="text-sm leading-7 text-slate-300">
-                        تجربة قهوة بطابع أمازوني فاخر، نكهات مركزة، ومشروبات منعشة، مع هوية بصرية دافئة ومميزة.
+                        {{ __('messages.footer.about') }}
                     </p>
                 </div>
 
                 <div>
-                    <h4 class="mb-3 text-sm font-semibold text-[#EBC045]">ساعات العمل</h4>
+                    <h4 class="mb-3 text-sm font-semibold text-[#EBC045]">{{ __('messages.footer.work_hours') }}</h4>
                     <ul class="space-y-2 text-sm text-slate-300">
-                        <li>يوميًا: 8:00 ص - 1:00 ص</li>
-                        <li>الجمعة: 2:00 م - 2:00 ص</li>
+                        <li>{{ __('messages.footer.everyday') }}</li>
+                        <li>{{ __('messages.footer.friday') }}</li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="mb-3 text-sm font-semibold text-[#EBC045]">تواصل</h4>
+                    <h4 class="mb-3 text-sm font-semibold text-[#EBC045]">{{ __('messages.footer.contact_title') }}</h4>
                     <ul class="space-y-2 text-sm text-slate-300">
-                        <li>الهاتف: +966 50 000 0000</li>
-                        <li>البريد: hello@amazonforest.cafe</li>
-                        <li>العنوان: Riyadh, Saudi Arabia</li>
+                        <li>{{ __('messages.footer.phone') }}</li>
+                        <li>{{ __('messages.footer.email') }}</li>
+                        <li>{{ __('messages.footer.address') }}</li>
                     </ul>
                 </div>
             </div>

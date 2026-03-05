@@ -5,6 +5,16 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'home')->name('home');
 Route::view('/menu', 'menu')->name('menu');
 
+Route::get('/language/{locale}', function (string $locale) {
+	$supportedLocales = ['ar_SA', 'en'];
+
+	if (in_array($locale, $supportedLocales, true)) {
+		session(['app_locale' => $locale]);
+	}
+
+	return redirect()->back();
+})->name('language.switch');
+
 Route::get('/images/Menu.png', function () {
 	$candidates = [
 		public_path('images/Menu.png'),
@@ -23,8 +33,8 @@ Route::get('/images/Menu.png', function () {
 
 Route::get('/assets/app.css', function () {
 	$candidates = [
-		public_path('fallback/app.css'),
 		...glob(public_path('build/assets/app-*.css')),
+		public_path('fallback/app.css'),
 	];
 
 	foreach ($candidates as $path) {
@@ -41,8 +51,8 @@ Route::get('/assets/app.css', function () {
 
 Route::get('/assets/app.js', function () {
 	$candidates = [
-		public_path('fallback/app.js'),
 		...glob(public_path('build/assets/app-*.js')),
+		public_path('fallback/app.js'),
 	];
 
 	foreach ($candidates as $path) {
