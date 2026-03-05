@@ -30,23 +30,73 @@
             display: grid;
             place-items: center;
             z-index: 2;
-            transition: opacity 520ms ease, transform 520ms ease;
+            transition: opacity 620ms ease, transform 620ms ease;
+            padding: 0 1rem;
         }
 
-        .qr-fallback-welcome-text {
+        .qr-fallback-welcome-card {
+            width: min(92vw, 760px);
+            border-radius: 24px;
+            border: 1px solid rgba(235, 192, 69, 0.32);
+            background: radial-gradient(circle at 15% 20%, rgba(235, 192, 69, 0.13), transparent 45%),
+                rgba(3, 30, 51, 0.7);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(7px);
+            padding: clamp(1.2rem, 3vw, 2rem) clamp(1rem, 2.4vw, 2rem);
+        }
+
+        .qr-type-row {
             margin: 0;
-            color: #ebc045;
             text-align: center;
-            text-transform: lowercase;
-            letter-spacing: 0.03em;
-            font-size: clamp(1.5rem, 5vw, 3.2rem);
             font-weight: 700;
-            line-height: 1.35;
-            max-width: min(92vw, 680px);
             overflow-wrap: anywhere;
             word-break: break-word;
-            text-shadow: 0 0 26px rgba(235, 192, 69, 0.5);
-            animation: qr-fallback-pulse 1.2s ease-in-out infinite;
+            min-height: 1.4em;
+        }
+
+        .qr-type-row--one {
+            color: #e6edf6;
+            letter-spacing: 0.07em;
+            font-size: clamp(1rem, 2.4vw, 1.65rem);
+        }
+
+        .qr-type-row--two {
+            margin-top: 0.38rem;
+            color: #ebc045;
+            letter-spacing: 0.09em;
+            font-size: clamp(1.45rem, 4.8vw, 3.2rem);
+            text-shadow: 0 0 18px rgba(235, 192, 69, 0.4);
+        }
+
+        .qr-type-row.is-typing::after {
+            content: '';
+            display: inline-block;
+            width: 0.08em;
+            height: 0.95em;
+            margin-inline-start: 0.18em;
+            background: currentColor;
+            vertical-align: -0.06em;
+            animation: qr-caret-blink 0.75s steps(1) infinite;
+        }
+
+        .qr-welcome-caption {
+            margin: 0.75rem 0 0;
+            text-align: center;
+            color: #b9c8d7;
+            font-size: 0.87rem;
+            letter-spacing: 0.08em;
+            opacity: 0.9;
+        }
+
+        .qr-welcome-glow {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(235, 192, 69, 0.26) 0%, rgba(235, 192, 69, 0) 68%);
+            filter: blur(12px);
+            z-index: -1;
+            animation: qr-fallback-pulse 1.8s ease-in-out infinite;
         }
 
         .qr-fallback-panel {
@@ -246,6 +296,21 @@
                 font-size: 0.7rem;
             }
 
+            .qr-type-row--one {
+                letter-spacing: 0.05em;
+                font-size: 1rem;
+            }
+
+            .qr-type-row--two {
+                letter-spacing: 0.05em;
+                font-size: 1.55rem;
+            }
+
+            .qr-welcome-caption {
+                font-size: 0.74rem;
+                letter-spacing: 0.06em;
+            }
+
             .qr-skeleton-layer {
                 grid-template-columns: 1fr;
                 gap: 0.75rem;
@@ -265,10 +330,23 @@
         @keyframes qr-fallback-pulse {
             0%,
             100% {
-                text-shadow: 0 0 20px rgba(235, 192, 69, 0.4);
+                transform: scale(0.96);
+                opacity: 0.58;
             }
             50% {
-                text-shadow: 0 0 42px rgba(235, 192, 69, 0.75);
+                transform: scale(1.08);
+                opacity: 0.95;
+            }
+        }
+
+        @keyframes qr-caret-blink {
+            0%,
+            45% {
+                opacity: 1;
+            }
+            50%,
+            100% {
+                opacity: 0;
             }
         }
 
@@ -284,7 +362,12 @@
 
     <section class="qr-fallback-stage" id="qrLandingStage">
         <div class="qr-fallback-welcome" id="qrWelcomeBlock">
-            <p class="qr-fallback-welcome-text">{{ __('messages.qr.welcome') }}</p>
+            <span class="qr-welcome-glow" aria-hidden="true"></span>
+            <div class="qr-fallback-welcome-card">
+                <p class="qr-type-row qr-type-row--one is-typing" id="qrWelcomeLine1" data-text="{{ __('messages.qr.welcome_line_1') }}"></p>
+                <p class="qr-type-row qr-type-row--two" id="qrWelcomeLine2" data-text="{{ __('messages.qr.welcome_line_2') }}"></p>
+                <p class="qr-welcome-caption">{{ __('messages.qr.subtitle') }}</p>
+            </div>
         </div>
 
         <div class="qr-fallback-panel" id="qrActionsPanel">
@@ -335,14 +418,60 @@
             const openMenuButton = document.getElementById('qrOpenMenuBtn');
             const switcher = document.getElementById('qrLayoutSwitcher');
             const actionGrid = document.getElementById('qrActionGrid');
+            const lineOne = document.getElementById('qrWelcomeLine1');
+            const lineTwo = document.getElementById('qrWelcomeLine2');
 
             if (!stage) {
                 return;
             }
 
-            window.setTimeout(function () {
+            const sleep = function (ms) {
+                return new Promise(function (resolve) {
+                    window.setTimeout(resolve, ms);
+                });
+            };
+
+            const typeLine = function (element, text, speed) {
+                return new Promise(function (resolve) {
+                    if (!element) {
+                        resolve();
+                        return;
+                    }
+
+                    element.textContent = '';
+                    element.classList.add('is-typing');
+
+                    let index = 0;
+                    const interval = window.setInterval(function () {
+                        element.textContent += text.charAt(index);
+                        index += 1;
+
+                        if (index >= text.length) {
+                            window.clearInterval(interval);
+                            element.classList.remove('is-typing');
+                            resolve();
+                        }
+                    }, speed);
+                });
+            };
+
+            const runWelcomeSequence = async function () {
+                if (!lineOne || !lineTwo) {
+                    stage.classList.add('qr-ready');
+                    return;
+                }
+
+                const lineOneText = lineOne.dataset.text || '';
+                const lineTwoText = lineTwo.dataset.text || '';
+
+                await typeLine(lineOne, lineOneText, 55);
+                await sleep(220);
+                await typeLine(lineTwo, lineTwoText, 68);
+                await sleep(760);
                 stage.classList.add('qr-ready');
-            }, 2100);
+            };
+
+            runWelcomeSequence();
 
             if (!switcher || !openMenuButton) {
                 return;

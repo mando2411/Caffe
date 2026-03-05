@@ -131,6 +131,8 @@ return [
     'qr' => [
         'title' => 'THE AMAZON FOREST | تجربة داخل الكافيه',
         'welcome' => 'حياكم الله في THE AMAZON FOREST',
+        'welcome_line_1' => 'حياكم الله في',
+        'welcome_line_2' => 'THE AMAZON FOREST',
         'subtitle' => 'اختر خدمتك الآن بكل سهولة',
         'layout_label' => 'اختيار هيكلة عرض المينيو',
         'layout_1' => 'هيكلة مينيو 1',

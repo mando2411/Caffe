@@ -131,6 +131,8 @@ return [
     'qr' => [
         'title' => 'THE AMAZON FOREST | In-Cafe Experience',
         'welcome' => 'welcome to the amazon forest',
+        'welcome_line_1' => 'welcome to',
+        'welcome_line_2' => 'THE AMAZON FOREST',
         'subtitle' => 'Choose your service in seconds',
         'layout_label' => 'Choose Menu Layout Mode',
         'layout_1' => 'Menu Layout 1',
