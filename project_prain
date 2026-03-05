@@ -340,3 +340,38 @@ Entry #N — [عنوان التعديل]
 - النتيجة:
 	- route /images/Menu.png أصبح مسجّلًا رسميًا كـ menu.image.
 	- الصفحة الرئيسية أصبحت تستخدم المسار المضمون route('menu.image').
+
+13) Entry #7 — إصلاح كسر التصميم عند غياب Vite assets على السيرفر
+- الهدف:
+	- حل مشكلة ظهور الصفحة "مكسورة" عندما لا يتم تحميل CSS/JS (كما ظهر في Network).
+
+- الملف/الملفات المتأثرة:
+	1) resources/views/layouts/cafe.blade.php
+	2) public/fallback/app.css (جديد)
+	3) public/fallback/app.js (جديد)
+
+- التغييرات الدقيقة:
+	- إنشاء ملفات fallback ثابتة من build الحالي داخل:
+		- public/fallback/app.css
+		- public/fallback/app.js
+	- تعديل layout بحيث ترتيب التحميل أصبح:
+		1) إذا Vite build موجود -> @vite
+		2) إذا Vite غير موجود لكن fallback موجود -> تحميل fallback/app.css و fallback/app.js
+		3) إذا الاثنين غير موجودين -> إظهار رسالة asset-warning فقط
+
+- المتغيرات/العناصر الجديدة أو المعدّلة:
+	- $hasFallbackCss
+	- $hasFallbackJs
+	- شرط @elseif ($hasFallbackCss) لحقن link/script البديلة
+
+- السبب الفني:
+	- في الإنتاج كان يتم تحميل document والصور فقط بدون CSS/JS، لذا الواجهة ظهرت بدون تنسيق.
+	- fallback المحلي يضمن تنسيق كامل حتى مع غياب manifest.
+
+- الأوامر التي نُفذت:
+	- نسخ build assets إلى fallback:
+		- Copy-Item public/build/assets/... -> public/fallback/app.css
+		- Copy-Item public/build/assets/... -> public/fallback/app.js
+
+- النتيجة:
+	- عند غياب Vite manifest لن ينهار الشكل؛ سيتم تحميل تنسيق وجافاسكربت من public/fallback.

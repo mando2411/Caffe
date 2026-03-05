@@ -2,6 +2,8 @@
 <html lang="ar" dir="rtl">
     @php
         $hasViteBuild = file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot'));
+        $hasFallbackCss = file_exists(public_path('fallback/app.css'));
+        $hasFallbackJs = file_exists(public_path('fallback/app.js'));
     @endphp
     <head>
         <meta charset="utf-8">
@@ -11,6 +13,11 @@
 
         @if ($hasViteBuild)
             @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @elseif ($hasFallbackCss)
+            <link rel="stylesheet" href="{{ asset('fallback/app.css') }}">
+            @if ($hasFallbackJs)
+                <script defer src="{{ asset('fallback/app.js') }}"></script>
+            @endif
         @else
             <style>
                 body {
@@ -34,9 +41,9 @@
         @endif
     </head>
     <body class="cafe-shell text-stone-100">
-        @unless ($hasViteBuild)
+        @unless ($hasViteBuild || $hasFallbackCss)
             <div class="asset-warning">
-                Frontend assets are not built yet. Please run <strong>npm run build</strong> and upload <strong>public/build</strong>.
+                Frontend assets are missing. Please run <strong>npm run build</strong> then upload <strong>public/build</strong> or <strong>public/fallback</strong>.
             </div>
         @endunless
         <div class="pointer-events-none fixed inset-0 -z-20 bg-[radial-gradient(circle_at_20%_20%,rgba(235,192,69,0.20),transparent_35%),radial-gradient(circle_at_80%_15%,rgba(8,70,131,0.35),transparent_35%),radial-gradient(circle_at_45%_85%,rgba(23,68,65,0.25),transparent_40%)]"></div>
