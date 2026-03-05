@@ -35,15 +35,16 @@ Route::get('/images/Menu.png', function () {
 
 Route::get('/assets/app.css', function () {
 	$candidates = [
-		...glob(public_path('build/assets/app-*.css')),
 		public_path('fallback/app.css'),
+		...glob(public_path('build/assets/app-*.css')),
 	];
 
 	foreach ($candidates as $path) {
 		if ($path && file_exists($path)) {
 			return response(file_get_contents($path), 200, [
 				'Content-Type' => 'text/css; charset=UTF-8',
-				'Cache-Control' => 'public, max-age=3600',
+				'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+				'Pragma' => 'no-cache',
 			]);
 		}
 	}
@@ -53,15 +54,16 @@ Route::get('/assets/app.css', function () {
 
 Route::get('/assets/app.js', function () {
 	$candidates = [
-		...glob(public_path('build/assets/app-*.js')),
 		public_path('fallback/app.js'),
+		...glob(public_path('build/assets/app-*.js')),
 	];
 
 	foreach ($candidates as $path) {
 		if ($path && file_exists($path)) {
 			return response(file_get_contents($path), 200, [
 				'Content-Type' => 'application/javascript; charset=UTF-8',
-				'Cache-Control' => 'public, max-age=3600',
+				'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+				'Pragma' => 'no-cache',
 			]);
 		}
 	}

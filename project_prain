@@ -576,6 +576,53 @@ Entry #N — [عنوان التعديل]
 - النتيجة:
 	- fallback الإنتاج يعرض صفحة QR بالشكل الصحيح.
 
+21) Entry #15 — معالجة مشكلة QR بدون ستايل/جافا في الإنتاج
+- الهدف:
+	- ضمان ظهور صفحة QR بشكل احترافي حتى لو CSS/JS الخارجيين لم يتم تحميلهم.
+	- تنفيذ تسلسل العرض المطلوب: welcome أولًا ثم ظهور الأقسام.
+
+- الملف/الملفات المتأثرة:
+	1) resources/views/qr.blade.php
+	2) routes/web.php
+	3) resources/views/layouts/cafe.blade.php
+
+- التغييرات الدقيقة:
+	- إعادة بناء qr.blade.php كصفحة ذات fallback داخلي كامل:
+		- Inline CSS مخصص للصفحة (Responsive Desktop/Mobile)
+		- Inline JS بسيط لتفعيل التسلسل الزمني
+		- `noscript` fallback لضمان ظهور الأقسام بدون JS
+	- التسلسل الزمني:
+		- يظهر `welcome to the amazon forest` أولًا
+		- بعد ~2.1 ثانية تتم إضافة class (`qr-ready`) لإظهار أزرار الخدمات تدريجيًا
+	- تحسين أمان تحميل الأصول العامة:
+		- في routes/web.php جعل ترتيب المرشحين للأصول يبدأ بـ `public/fallback` أولًا
+		- تعطيل caching القوي عبر headers no-store/no-cache
+	- إضافة query version في layout URLs للأصول الديناميكية لكسر الكاش:
+		- `?v=<filemtime>`
+
+- المتغيرات/العناصر الجديدة أو المعدّلة:
+	- QR IDs/classes:
+		- #qrLandingStage
+		- #qrWelcomeBlock
+		- #qrActionsPanel
+		- .qr-fallback-* (مجموعة أنماط الصفحة)
+	- JS sequence:
+		- setTimeout(..., 2100)
+		- stage.classList.add('qr-ready')
+
+- السبب الفني:
+	- المستخدم أبلغ أن الإضافات ظهرت بدون ستايل/جافا.
+	- الحل يتجنب الاعتماد الكامل على الأصول الخارجية لضمان تجربة ثابتة في بيئة الاستضافة.
+
+- التحقق:
+	- php artisan route:list --path=qr
+	- php artisan route:list --path=assets
+	- get_errors على qr/layout/routes = بدون أخطاء.
+
+- النتيجة:
+	- صفحة QR أصبحت احترافية ومتجاوبة وتعمل حتى في أسوأ سيناريو تحميل أصول.
+	- welcome يظهر أولًا ثم الأقسام كما طُلب.
+
 15) Entry #9 — إضافة اللغة العربية وجعلها الافتراضية
 - الهدف:
 	- تفعيل اللغة العربية كلغة افتراضية للتطبيق.

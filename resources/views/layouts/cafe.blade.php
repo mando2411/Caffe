@@ -2,6 +2,12 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ str_starts_with(app()->getLocale(), 'ar') ? 'rtl' : 'ltr' }}">
     @php
         $hasViteBuild = file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot'));
+        $fallbackCssVersion = file_exists(public_path('fallback/app.css'))
+            ? filemtime(public_path('fallback/app.css'))
+            : time();
+        $fallbackJsVersion = file_exists(public_path('fallback/app.js'))
+            ? filemtime(public_path('fallback/app.js'))
+            : time();
     @endphp
     <head>
         <meta charset="utf-8">
@@ -12,8 +18,8 @@
         @if ($hasViteBuild)
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @else
-            <link rel="stylesheet" href="{{ route('asset.app.css') }}">
-            <script defer src="{{ route('asset.app.js') }}"></script>
+            <link rel="stylesheet" href="{{ route('asset.app.css', ['v' => $fallbackCssVersion]) }}">
+            <script defer src="{{ route('asset.app.js', ['v' => $fallbackJsVersion]) }}"></script>
         @endif
     </head>
     <body class="cafe-shell text-stone-100">
