@@ -417,3 +417,49 @@ Entry #N — [عنوان التعديل]
 - النتيجة:
 	- fallback الأصول أصبح مستقلًا عن static server behavior.
 	- الصفحة لن تظل مكسورة بسبب 404 للأصول الأساسية.
+
+15) Entry #9 — إضافة اللغة العربية وجعلها الافتراضية
+- الهدف:
+	- تفعيل اللغة العربية كلغة افتراضية للتطبيق.
+
+- الملف/الملفات المتأثرة:
+	1) config/app.php
+	2) .env.example
+	3) .env
+	4) resources/views/layouts/cafe.blade.php
+	5) lang/ar.json (جديد)
+
+- التغييرات الدقيقة:
+	- config/app.php:
+		- locale default من 'en' إلى 'ar'
+		- faker_locale default من 'en_US' إلى 'ar_SA'
+	- .env.example:
+		- APP_LOCALE=ar
+		- APP_FAKER_LOCALE=ar_SA
+		- APP_FALLBACK_LOCALE=en
+	- .env:
+		- APP_LOCALE=ar
+		- APP_FAKER_LOCALE=ar_SA
+		- APP_FALLBACK_LOCALE=en
+	- layout:
+		- جعل خصائص html ديناميكية حسب locale:
+			- lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+			- dir="{{ str_starts_with(app()->getLocale(), 'ar') ? 'rtl' : 'ltr' }}"
+	- إنشاء ملف ترجمة أساسي:
+		- lang/ar.json
+
+- المتغيرات/الدوال الجديدة أو المعدّلة:
+	- app()->getLocale()
+	- str_starts_with(...)
+	- str_replace(...)
+
+- السبب الفني:
+	- طلب المستخدم إضافة العربية وجعلها الافتراضية على مستوى التطبيق بالكامل.
+
+- الأوامر التي نُفذت للتحقق:
+	- php artisan config:clear
+	- php artisan tinker --execute="echo config('app.locale');"
+
+- النتيجة:
+	- اللغة الافتراضية أصبحت ar فعليًا.
+	- اتجاه الصفحة يتم ضبطه تلقائيًا RTL عند العربية.
