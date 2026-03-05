@@ -1,14 +1,44 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+    @php
+        $hasViteBuild = file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot'));
+    @endphp
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>@yield('title', 'The Amazon Forest Cafe')</title>
         <meta name="description" content="The Amazon Forest Cafe - Premium coffee, tea, mojito, and desserts with a rich jungle-inspired identity.">
 
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @if ($hasViteBuild)
+            @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @else
+            <style>
+                body {
+                    margin: 0;
+                    min-height: 100vh;
+                    font-family: Arial, sans-serif;
+                    background: #021421;
+                    color: #fff;
+                }
+                .asset-warning {
+                    margin: 16px;
+                    padding: 12px 14px;
+                    border: 1px solid #ebc04566;
+                    border-radius: 10px;
+                    background: #1d2a36;
+                    color: #ebc045;
+                    font-size: 14px;
+                    line-height: 1.6;
+                }
+            </style>
+        @endif
     </head>
     <body class="cafe-shell text-stone-100">
+        @unless ($hasViteBuild)
+            <div class="asset-warning">
+                Frontend assets are not built yet. Please run <strong>npm run build</strong> and upload <strong>public/build</strong>.
+            </div>
+        @endunless
         <div class="pointer-events-none fixed inset-0 -z-20 bg-[radial-gradient(circle_at_20%_20%,rgba(235,192,69,0.20),transparent_35%),radial-gradient(circle_at_80%_15%,rgba(8,70,131,0.35),transparent_35%),radial-gradient(circle_at_45%_85%,rgba(23,68,65,0.25),transparent_40%)]"></div>
         <div class="grain-overlay"></div>
 
