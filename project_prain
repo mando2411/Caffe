@@ -375,3 +375,45 @@ Entry #N — [عنوان التعديل]
 
 - النتيجة:
 	- عند غياب Vite manifest لن ينهار الشكل؛ سيتم تحميل تنسيق وجافاسكربت من public/fallback.
+
+14) Entry #8 — إصلاح 404 نهائيًا عبر مسارات أصول ديناميكية
+- الهدف:
+	- القضاء على 404 الخاص بـ app.css/app.js حتى مع استضافة لا تقدّم static files بشكل مباشر.
+
+- الملف/الملفات المتأثرة:
+	1) routes/web.php
+	2) resources/views/layouts/cafe.blade.php
+
+- التغييرات الدقيقة:
+	- إضافة route جديد:
+		- /assets/app.css (name: asset.app.css)
+	- إضافة route جديد:
+		- /assets/app.js (name: asset.app.js)
+	- كل route يبحث تلقائيًا عن الملف في المسارات التالية:
+		- public/fallback/app.css أو app.js
+		- public/build/assets/app-*.css أو app-*.js
+	- عند العثور على الملف يتم إرساله مباشرة من Laravel مع Content-Type صحيح.
+	- تعديل layout fallback ليستخدم:
+		- route('asset.app.css')
+		- route('asset.app.js')
+		بدل asset('fallback/...').
+
+- المتغيرات/الدوال الجديدة أو المعدّلة:
+	- $candidates في route assets
+	- glob(public_path('build/assets/app-*.css'))
+	- glob(public_path('build/assets/app-*.js'))
+	- response(file_get_contents($path), ...headers)
+
+- السبب الفني:
+	- 404 كان ناتجًا عن عدم توفر/عدم خدمة ملفات static مباشرة.
+	- تمرير الأصول عبر Laravel route يضمن التحميل حتى لو إعدادات web server ناقصة.
+
+- التحقق:
+	- php artisan route:list --path=assets
+	- ظهرت المسارات:
+		- assets/app.css
+		- assets/app.js
+
+- النتيجة:
+	- fallback الأصول أصبح مستقلًا عن static server behavior.
+	- الصفحة لن تظل مكسورة بسبب 404 للأصول الأساسية.
