@@ -4,6 +4,12 @@
 
 @section('content')
     <style>
+        html,
+        body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
         .qr-fallback-stage {
             position: relative;
             max-width: 860px;
@@ -13,6 +19,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-x: clip;
         }
 
         .qr-fallback-welcome {
@@ -29,9 +38,13 @@
             color: #ebc045;
             text-align: center;
             text-transform: lowercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.03em;
             font-size: clamp(1.5rem, 5vw, 3.2rem);
             font-weight: 700;
+            line-height: 1.35;
+            max-width: min(92vw, 680px);
+            overflow-wrap: anywhere;
+            word-break: break-word;
             text-shadow: 0 0 26px rgba(235, 192, 69, 0.5);
             animation: qr-fallback-pulse 1.2s ease-in-out infinite;
         }
@@ -42,6 +55,7 @@
             opacity: 0;
             transform: translateY(20px) scale(0.98);
             pointer-events: none;
+            box-sizing: border-box;
             transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1), transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -61,9 +75,11 @@
             margin: 0 0 0.8rem;
             text-align: center;
             color: #ebc045;
-            letter-spacing: 0.22em;
+            letter-spacing: 0.13em;
             font-size: 0.78rem;
             text-transform: uppercase;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .qr-fallback-subtitle {
@@ -129,10 +145,27 @@
         @media (max-width: 640px) {
             .qr-fallback-grid {
                 grid-template-columns: 1fr;
+                gap: 0.75rem;
             }
 
             .qr-span-2 {
                 grid-column: span 1;
+            }
+
+            .qr-fallback-stage {
+                padding-inline: 0.8rem;
+                padding-top: 1rem;
+            }
+
+            .qr-fallback-brand {
+                letter-spacing: 0.08em;
+                font-size: 0.7rem;
+            }
+
+            .qr-fallback-btn {
+                min-height: 52px;
+                font-size: 0.95rem;
+                padding-inline: 0.85rem;
             }
         }
 

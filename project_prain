@@ -687,3 +687,36 @@ Entry #N — [عنوان التعديل]
 - النتيجة:
 	- في Locale العربية (ar_SA) يظهر الترحيب بصيغة سعودية.
 	- النسخة الإنجليزية بقيت كما هي بدون تغيير.
+
+23) Entry #17 — إصلاح عرض صفحة QR على الموبايل (منع السكرول الجانبي)
+- الهدف:
+	- حل مشكلة overflow الأفقي في صفحة /qr على الهاتف.
+	- ضبط العرض ليكون متجاوبًا واحترافيًا بدون سكرول جانبي.
+
+- الملف/الملفات المتأثرة:
+	1) resources/views/layouts/cafe.blade.php
+	2) resources/views/qr.blade.php
+	3) public/fallback/app.css (تحديث من build)
+	4) public/fallback/app.js (تحديث من build)
+
+- التغييرات الدقيقة:
+	- في layout header:
+		- تقليل كثافة وحجم عنوان البراند على الموبايل.
+		- إضافة `min-w-0` و`truncate` للنص الفرعي لتجنب تمدد العرض.
+	- في qr.blade.php (Inline fallback styles):
+		- فرض `overflow-x: hidden` على html/body.
+		- جعل stage بعرض 100% و`overflow-x: clip`.
+		- تقليل letter-spacing في welcome/brand.
+		- تفعيل wrapping للنصوص الطويلة (`overflow-wrap:anywhere`, `word-break:break-word`).
+		- تحسينات media query للموبايل (padding, button size, spacing).
+
+- السبب الفني:
+	- نصوص إنجليزية طويلة مع tracking كبير + هيدر براند كانت تسبب تمددًا أفقيًا في بعض الشاشات.
+
+- التحقق:
+	- get_errors للملفات المعدلة = بدون أخطاء.
+	- npm run build = نجح.
+
+- النتيجة:
+	- صفحة /qr أصبحت متجاوبة على الموبايل بدون سكرول جانبي.
+	- تسلسل welcome ثم ظهور الأقسام ما زال يعمل كما هو.

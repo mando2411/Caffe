@@ -28,11 +28,11 @@
 
         <header class="sticky top-0 z-40 border-b border-white/10 bg-[#041625]/80 backdrop-blur-xl">
             <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-                <a href="{{ route('home') }}" class="group inline-flex items-center gap-3">
+                <a href="{{ route('home') }}" class="group inline-flex min-w-0 items-center gap-2 sm:gap-3">
                     <span class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#EBC045]/50 bg-[#032E51] text-[#EBC045] shadow-[0_0_20px_rgba(235,192,69,0.15)]">☕</span>
-                    <span class="leading-tight">
-                        <strong class="block text-sm tracking-[0.26em] text-[#EBC045]">{{ __('messages.brand.name') }}</strong>
-                        <span class="text-xs text-slate-300/90">{{ __('messages.brand.subtitle') }}</span>
+                    <span class="min-w-0 leading-tight">
+                        <strong class="block text-[10px] tracking-[0.11em] text-[#EBC045] sm:text-sm sm:tracking-[0.26em]">{{ __('messages.brand.name') }}</strong>
+                        <span class="block truncate text-[10px] text-slate-300/90 sm:text-xs">{{ __('messages.brand.subtitle') }}</span>
                     </span>
                 </a>
 
