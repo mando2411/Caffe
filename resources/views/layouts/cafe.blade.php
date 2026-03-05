@@ -14,6 +14,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>@yield('title', __('messages.meta.title_suffix'))</title>
         <meta name="description" content="{{ __('messages.meta.description') }}">
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 
         @if ($hasViteBuild)
             @vite(['resources/css/app.css', 'resources/js/app.js'])

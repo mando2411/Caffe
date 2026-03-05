@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Coffee cup favicon">
+  <rect width="64" height="64" rx="14" fill="#032E51"/>
+  <ellipse cx="32" cy="48" rx="20" ry="5" fill="#EBC045" opacity="0.45"/>
+  <rect x="16" y="24" width="28" height="18" rx="5" fill="#ECDE8D"/>
+  <path d="M44 27h4a5 5 0 1 1 0 10h-4" fill="none" stroke="#ECDE8D" stroke-width="3" stroke-linecap="round"/>
+  <path d="M24 16c2 2 2 5 0 7M31 14c2 2 2 5 0 7M38 16c2 2 2 5 0 7" fill="none" stroke="#EBC045" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
