@@ -91,3 +91,182 @@
 - شخصية التصميم: داكنة، طبيعية، فاخرة، بطابع استوائي
 - الألوان الأساسية: كحلي/أزرق بترولي + ذهبي + أخضر زيتوني/ترابي
 - المنيو منظم في فئات مشروبات ساخنة وباردة وسناكس مع تسعير SAR واضح.
+
+8) سجل التعديلات التنفيذي (Self-Log)
+الغرض من هذا القسم: توثيق كل تعديل أقوم به لاحقًا بشكل تفصيلي حتى يكون واضحًا:
+- ماذا تغيّر؟
+- أين تغيّر؟
+- لماذا تغيّر؟
+- ما أسماء المتغيرات/الدوال/الملفات المستخدمة؟
+- ما الأوامر التي تم تنفيذها؟
+
+قاعدة العمل من الآن:
+- أي تعديل جديد في المشروع سأضيف له مدخل (Entry) هنا مباشرة.
+- سأذكر اسم الملف/المسار بدقة، وأسماء المتغيرات/الدوال التي تم إنشاؤها أو تعديلها.
+- سأذكر السبب الفني والنتيجة النهائية.
+
+8.1) Entry #1 — تحليل الصورة واستخراج النص
+- الهدف: قراءة محتوى Menu.png واستخراج اسم الكافيه والعناصر النصية.
+- الملفات التي تم إنشاؤها:
+	- scripts/ocr_menu.js
+- المتغيرات/العناصر المستخدمة في scripts/ocr_menu.js:
+	- createWorker: دالة مستوردة من tesseract.js لتهيئة OCR worker
+	- imagePath: مسار الصورة المُدخل من argv
+	- worker: كائن OCR worker
+	- data.text: النص الناتج عن التعرف البصري
+- الأوامر التي استُخدمت:
+	- node scripts/ocr_menu.js resources/assets/Menu.png
+- النتيجة:
+	- تم استخراج نص واضح يتضمن: THE AMAZON FOREST + أقسام المينيو + أسعار متعددة.
+
+8.2) Entry #2 — تحليل الألوان والاتجاه آليًا
+- الهدف: استخراج ألوان المينيو بدقة رقمية ونِسب الظهور واتجاه الصورة.
+- الملفات التي تم إنشاؤها:
+	- scripts/analyze_menu.py
+- المتغيرات/العناصر المستخدمة في scripts/analyze_menu.py:
+	- image_path: مسار ملف الصورة
+	- img: نسخة RGB من الصورة
+	- width, height: أبعاد الصورة
+	- q: نسخة Quantized لاستخراج Palette مستقرة
+	- colors: قائمة الألوان مع عدد البكسلات لكل لون
+	- palette: قائمة منظمة للألوان الأساسية (hex/rgb/percent/hsv)
+	- avg_r, avg_g, avg_b: متوسط اللون العام للصورة
+	- result: كائن JSON النهائي للتحليل
+- الأوامر التي استُخدمت:
+	- python scripts/analyze_menu.py resources/assets/Menu.png
+- النتيجة:
+	- استخراج 15 لونًا مهيمنًا مع النِّسب.
+	- تحديد الاتجاه Landscape.
+	- استخراج متوسط اللون #4D5E4F.
+
+8.3) Entry #3 — إنشاء ملف التوثيق النهائي
+- الهدف: تجميع التحليل التفصيلي في ملف واحد واضح للرجوع إليه.
+- الملف الذي تم إنشاؤه:
+	- project_prain
+- المحتوى الذي تمت إضافته:
+	- اسم الكافيه/الهوية
+	- Palette كاملة
+	- اتجاه التصميم وبنية الأقسام
+	- ملاحظات UX/Branding
+	- خلاصة تنفيذية
+
+9) قالب التوثيق لأي تعديل قادم
+Entry #N — [عنوان التعديل]
+- الهدف:
+- الملف/الملفات المتأثرة:
+- التغييرات الدقيقة:
+- المتغيرات/الدوال الجديدة أو المعدّلة:
+- السبب الفني:
+- الأوامر التي نُفذت:
+- النتيجة:
+- ملاحظات لاحقة (إن وجدت):
+
+10) Entry #4 — بناء موقع الكافيه الكامل (Home + Menu) بنفس هوية المشروع
+- الهدف:
+	- تحويل تحليل الهوية في هذا الملف إلى واجهة ويب فعلية داخل Laravel.
+	- إنشاء صفحة رئيسية + صفحة منيو بنفس الطابع اللوني (Amazon Forest) مع أنيميشن وResponsive.
+
+- الملف/الملفات المتأثرة:
+	1) routes/web.php
+	2) resources/views/layouts/cafe.blade.php
+	3) resources/views/home.blade.php
+	4) resources/views/menu.blade.php
+	5) resources/css/app.css
+	6) resources/js/app.js
+	7) public/images/Menu.png (نسخ من resources/assets/Menu.png)
+
+- التغييرات الدقيقة:
+	- routes/web.php:
+		- استبدال route الافتراضي welcome بـ:
+			- Route::view('/', 'home')->name('home')
+			- Route::view('/menu', 'menu')->name('menu')
+
+	- resources/views/layouts/cafe.blade.php:
+		- إنشاء Layout عام للموقع يشمل:
+			- Header/Navbar ثابت (desktop + mobile)
+			- روابط: الرئيسية، المنيو، عن الكافيه، تواصل
+			- Mobile menu قابل للفتح/الغلق
+			- Footer بمعلومات التواصل وساعات العمل
+			- الخلفية العامة والتأثيرات البصرية (gradient + grain overlay)
+
+	- resources/views/home.blade.php:
+		- Hero section باسم الهوية: THE AMAZON FOREST
+		- CTA buttons: استكشف المنيو / تعرف علينا
+		- بطاقات إحصائية (Menu Items / Categories / Fresh Roasting)
+		- عرض صورة المنيو داخل Glass Card
+		- Sections إضافية: About + Feature Cards + CTA نهائي
+
+	- resources/views/menu.blade.php:
+		- إنشاء صفحة منيو كاملة بالتصنيفات المستنبطة من التحليل.
+		- كل تصنيف عبارة عن بطاقة Menu Card وبداخلها عناصر + أسعار.
+		- CTA نهائي للحجز/التواصل.
+
+	- resources/css/app.css:
+		- إضافة نظام ألوان مخصص مطابق للتحليل:
+			- --af-blue-deep, --af-blue-royal, --af-teal-dark, --af-gold, --af-gold-soft, --af-olive
+		- إضافة Components classes للستايل العام:
+			- .cafe-shell, .grain-overlay, .nav-link, .mobile-nav-link
+			- .btn-primary, .btn-secondary
+			- .glass-card, .menu-preview, .stat-card, .feature-card
+			- .menu-card, .menu-card-header, .menu-item-row
+		- إضافة Animation utilities:
+			- [data-reveal] / .is-visible
+			- .orb, .orb-gold, .orb-blue
+			- keyframes: pulseOrb, floatY
+
+	- resources/js/app.js:
+		- إضافة IntersectionObserver لإظهار العناصر عند الظهور في الشاشة.
+		- إضافة منطق Mobile Menu Toggle.
+		- إصلاح منطق aria-expanded عبر متغيري:
+			- isHidden
+			- isOpen
+
+	- public/images/Menu.png:
+		- نسخ الصورة لتكون متاحة مباشرة في الواجهة عبر asset('images/Menu.png').
+
+- المتغيرات/الدوال الجديدة أو المعدّلة (تفصيلي):
+	- في menu.blade.php:
+		- $categories: مصفوفة رئيسية للتصنيفات
+		- $categoryName: اسم التصنيف أثناء loop
+		- $items: عناصر التصنيف الواحد
+		- $item['name'], $item['price']: بيانات العنصر الفردي
+
+	- في app.js:
+		- revealNodes: جميع العناصر التي تحتوي data-reveal
+		- revealObserver: كائن IntersectionObserver
+		- entries / entry: نتائج الـobserver
+		- mobileToggle: زر فتح القائمة بالموبايل
+		- mobileNav: القائمة المتنقلة
+		- isHidden: نتيجة toggle class hidden
+		- isOpen: حالة القائمة بعد العكس المنطقي
+
+	- في layout/واجهة Blade:
+		- route('home') و route('menu') للانتقال بين الصفحات.
+		- request()->routeIs(...) لتفعيل active state في navbar.
+
+- السبب الفني:
+	- المستخدم طلب موقع احترافي بالكامل بنفس هوية التحليل.
+	- تم اختيار Layout موحد + صفحات منفصلة لضمان قابلية التوسع.
+	- تم اعتماد Tailwind classes + CSS مخصص لضبط هوية بصرية دقيقة وأنيميشن سلس.
+
+- الأوامر التي نُفذت:
+	- نسخ الصورة للـpublic:
+		- Copy-Item -Force resources/assets/Menu.png public/images/Menu.png
+	- التحقق من البناء:
+		- npm run build
+	- التحقق من المسارات:
+		- php artisan route:list
+
+- النتيجة:
+	- الموقع أصبح يحتوي على:
+		- صفحة رئيسية احترافية ومتجاوبة
+		- صفحة منيو كاملة ومتجاوبة
+		- أنيميشن ظهور وتفاعلات hover وحركة عناصر بصرية
+	- المسارات الفعالة:
+		- /
+		- /menu
+	- build نجح بدون أخطاء.
+
+- ملاحظات لاحقة:
+	- المحتوى قابل للتوسعة بسهولة (يمكن لاحقًا نقل المنيو إلى DB + لوحة تحكم).
+	- welcome.blade.php بقي موجودًا لكن غير مستخدم حاليًا بعد تغيير routes.
