@@ -7,6 +7,50 @@ Route::view('/menu', 'menu')->name('menu');
 Route::view('/qr', 'qr')->name('qr.landing');
 Route::redirect('/inside', '/qr');
 
+Route::get('/menu.pdf', function () {
+	$candidates = [
+		resource_path('assets/ENGLISH 1.pdf'),
+		public_path('menu.pdf'),
+	];
+
+	foreach ($candidates as $path) {
+		if (file_exists($path)) {
+			return response()->file($path, [
+				'Content-Type' => 'application/pdf',
+				'Cache-Control' => 'public, max-age=3600',
+			]);
+		}
+	}
+
+	abort(404);
+})->name('menu.pdf');
+
+Route::get('/qr/menu-layout/{mode}', function (int $mode) {
+	$map = [
+		1 => [
+			'mode' => 1,
+			'url' => route('menu'),
+			'target' => '_self',
+		],
+		2 => [
+			'mode' => 2,
+			'url' => route('menu.image'),
+			'target' => '_blank',
+		],
+		3 => [
+			'mode' => 3,
+			'url' => route('menu.pdf'),
+			'target' => '_blank',
+		],
+	];
+
+	if (! isset($map[$mode])) {
+		return response()->json(['message' => 'Invalid mode'], 422);
+	}
+
+	return response()->json($map[$mode]);
+})->name('qr.menu-layout');
+
 Route::get('/language/{locale}', function (string $locale) {
 	$supportedLocales = ['ar_SA', 'en'];
 

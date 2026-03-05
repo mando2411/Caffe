@@ -90,6 +90,47 @@
             font-weight: 700;
         }
 
+        .qr-layout-label {
+            margin: 1.1rem 0 0.65rem;
+            text-align: center;
+            color: #cbd5e1;
+            font-size: 0.82rem;
+            letter-spacing: 0.08em;
+        }
+
+        .qr-layout-switcher {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.55rem;
+            margin-bottom: 1rem;
+        }
+
+        .qr-layout-btn {
+            border: 1px solid rgba(235, 192, 69, 0.22);
+            background: rgba(2, 27, 45, 0.7);
+            color: #e2e8f0;
+            min-height: 42px;
+            border-radius: 10px;
+            padding: 0.45rem 0.55rem;
+            font-size: 0.83rem;
+            font-weight: 700;
+            transition: all 220ms ease;
+            cursor: pointer;
+        }
+
+        .qr-layout-btn:hover {
+            border-color: rgba(235, 192, 69, 0.65);
+            color: #ebc045;
+            transform: translateY(-1px);
+        }
+
+        .qr-layout-btn.is-active {
+            border-color: #ebc045;
+            background: rgba(235, 192, 69, 0.2);
+            color: #ebc045;
+            box-shadow: 0 6px 20px rgba(235, 192, 69, 0.2);
+        }
+
         .qr-fallback-grid {
             margin-top: 1.8rem;
             display: grid;
@@ -148,6 +189,12 @@
                 gap: 0.75rem;
             }
 
+            .qr-layout-switcher {
+                grid-template-columns: 1fr;
+                gap: 0.45rem;
+                margin-bottom: 0.8rem;
+            }
+
             .qr-span-2 {
                 grid-column: span 1;
             }
@@ -188,9 +235,16 @@
         <div class="qr-fallback-panel" id="qrActionsPanel">
             <p class="qr-fallback-brand">{{ __('messages.brand.name') }}</p>
             <h1 class="qr-fallback-subtitle">{{ __('messages.qr.subtitle') }}</h1>
+            <p class="qr-layout-label">{{ __('messages.qr.layout_label') }}</p>
+
+            <div class="qr-layout-switcher" id="qrLayoutSwitcher">
+                <button type="button" class="qr-layout-btn is-active" data-layout-mode="1">{{ __('messages.qr.layout_1') }}</button>
+                <button type="button" class="qr-layout-btn" data-layout-mode="2">{{ __('messages.qr.layout_2') }}</button>
+                <button type="button" class="qr-layout-btn" data-layout-mode="3">{{ __('messages.qr.layout_3') }}</button>
+            </div>
 
             <div class="qr-fallback-grid">
-                <a href="{{ route('menu') }}" class="qr-fallback-btn">{{ __('messages.qr.open_menu') }}</a>
+                <a href="{{ route('menu') }}" class="qr-fallback-btn" id="qrOpenMenuBtn">{{ __('messages.qr.open_menu') }}</a>
                 <a href="tel:+966500000000" class="qr-fallback-btn">{{ __('messages.qr.call_waiter') }}</a>
                 <a href="https://wa.me/966500000000?text={{ urlencode(__('messages.qr.order_online')) }}" class="qr-fallback-btn" target="_blank" rel="noopener noreferrer">{{ __('messages.qr.order_online') }}</a>
                 <a href="mailto:hello@amazonforest.cafe?subject={{ urlencode(__('messages.qr.rate_us')) }}" class="qr-fallback-btn">{{ __('messages.qr.rate_us') }}</a>
@@ -215,6 +269,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const stage = document.getElementById('qrLandingStage');
+            const openMenuButton = document.getElementById('qrOpenMenuBtn');
+            const switcher = document.getElementById('qrLayoutSwitcher');
+
             if (!stage) {
                 return;
             }
@@ -222,6 +279,58 @@
             window.setTimeout(function () {
                 stage.classList.add('qr-ready');
             }, 2100);
+
+            if (!switcher || !openMenuButton) {
+                return;
+            }
+
+            const buttons = Array.from(switcher.querySelectorAll('[data-layout-mode]'));
+
+            const setActiveMode = function (mode) {
+                buttons.forEach(function (button) {
+                    const isActive = button.dataset.layoutMode === String(mode);
+                    button.classList.toggle('is-active', isActive);
+                });
+            };
+
+            const fallbackMap = {
+                1: { url: '{{ route('menu') }}', target: '_self' },
+                2: { url: '{{ route('menu.image') }}', target: '_blank' },
+                3: { url: '{{ route('menu.pdf') }}', target: '_blank' },
+            };
+
+            const applyMode = function (mode, payload) {
+                const state = payload || fallbackMap[mode] || fallbackMap[1];
+                openMenuButton.href = state.url;
+                openMenuButton.target = state.target;
+                openMenuButton.rel = state.target === '_blank' ? 'noopener noreferrer' : '';
+                setActiveMode(mode);
+            };
+
+            buttons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const mode = Number(button.dataset.layoutMode || '1');
+
+                    fetch(`{{ url('/qr/menu-layout') }}/${mode}`, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                    })
+                        .then(function (response) {
+                            if (!response.ok) {
+                                throw new Error('Request failed');
+                            }
+                            return response.json();
+                        })
+                        .then(function (data) {
+                            applyMode(mode, data);
+                        })
+                        .catch(function () {
+                            applyMode(mode);
+                        });
+                });
+            });
         });
     </script>
 @endsection

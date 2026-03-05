@@ -774,3 +774,59 @@ Entry #N — [عنوان التعديل]
 
 - النتيجة:
 	- أيقونة القهوة تظهر بشكل موثوق بعد تحديث السيرفر والمتصفح.
+
+26) Entry #20 — إضافة هيكلة مينيو 1/2/3 في صفحة QR مع AJAX
+- الهدف:
+	- إضافة 3 أزرار هيكلة للمينيو داخل /qr.
+	- تظليل الاختيار النشط.
+	- تبديل سلوك زر "فتح المينيو" بدون Reload عبر AJAX.
+
+- الملف/الملفات المتأثرة:
+	1) routes/web.php
+	2) resources/views/qr.blade.php
+	3) lang/ar_SA/messages.php
+	4) lang/en/messages.php
+	5) public/fallback/app.css (تحديث)
+	6) public/fallback/app.js (تحديث)
+
+- التغييرات الدقيقة:
+	- إضافة route PDF:
+		- /menu.pdf (name: menu.pdf) يخدم ملف ENGLISH 1.pdf
+	- إضافة endpoint AJAX:
+		- /qr/menu-layout/{mode} (name: qr.menu-layout)
+		- mode=1 -> زر فتح المينيو يفتح route('menu')
+		- mode=2 -> زر فتح المينيو يفتح route('menu.image')
+		- mode=3 -> زر فتح المينيو يفتح route('menu.pdf')
+	- في qr.blade.php:
+		- إضافة أزرار:
+			- هيكلة مينيو 1
+			- هيكلة مينيو 2
+			- هيكلة مينيو 3
+		- الزر النشط يحمل class `is-active`
+		- زر "فتح المينيو" أصبح له id: `qrOpenMenuBtn`
+		- JS fetch endpoint وتحديث href/target + active state بدون ريلود
+	- إضافة مفاتيح ترجمة labels للهيكلة في العربي والإنجليزي.
+
+- المتغيرات/العناصر الجديدة أو المعدّلة:
+	- backend JSON map:
+		- mode, url, target
+	- frontend ids/classes:
+		- #qrLayoutSwitcher
+		- .qr-layout-btn
+		- #qrOpenMenuBtn
+	- functions JS:
+		- setActiveMode(mode)
+		- applyMode(mode, payload)
+
+- السبب الفني:
+	- تنفيذ طلب المستخدم: 3 هياكل مع AJAX بدون إعادة تحميل الصفحة.
+
+- التحقق:
+	- php artisan route:list --path=qr
+	- php artisan route:list --path=menu.pdf
+	- npm run build
+	- get_errors = بدون أخطاء.
+
+- النتيجة:
+	- صفحة /qr تدعم التبديل الفوري بين الهيكلة 1/2/3 مع تظليل النشط.
+	- الوضع الافتراضي = هيكلة مينيو 1 (الوضع الحالي).
