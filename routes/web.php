@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home')->name('home');
 Route::view('/menu', 'menu')->name('menu');
+Route::view('/qr', 'qr')->name('qr.landing');
+Route::redirect('/inside', '/qr');
 
 Route::get('/language/{locale}', function (string $locale) {
 	$supportedLocales = ['ar_SA', 'en'];

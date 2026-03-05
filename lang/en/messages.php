@@ -127,4 +127,15 @@ return [
             ],
         ],
     ],
+
+    'qr' => [
+        'title' => 'THE AMAZON FOREST | In-Cafe Experience',
+        'welcome' => 'welcome to the amazon forest',
+        'subtitle' => 'Choose your service in seconds',
+        'open_menu' => 'Open Menu',
+        'call_waiter' => 'Call Waiter',
+        'order_online' => 'Order Online',
+        'rate_us' => 'Rate Us',
+        'suggest_us' => 'Suggest to Us',
+    ],
 ];

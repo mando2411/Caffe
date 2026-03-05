@@ -514,6 +514,68 @@ Entry #N — [عنوان التعديل]
 - النتيجة:
 	- اسم البراند في النسخة العربية أصبح ثابتًا وغير مترجم: THE AMAZON FOREST.
 
+19) Entry #13 — إنشاء صفحة QR داخل الكافيه (Landing تجربة العملاء)
+- الهدف:
+	- إنشاء صفحة مخصصة للـQR داخل الكافيه تعرض ترحيب أنيميشن ثم خيارات الخدمة.
+
+- الملف/الملفات المتأثرة:
+	1) routes/web.php
+	2) resources/views/qr.blade.php (جديد)
+	3) resources/css/app.css
+	4) lang/ar_SA/messages.php
+	5) lang/en/messages.php
+
+- التغييرات الدقيقة:
+	- إضافة route جديد:
+		- /qr  (name: qr.landing)
+	- إضافة alias مختصر:
+		- /inside -> redirect to /qr
+	- إنشاء qr.blade.php بترتيب مطلوب:
+		1) أنيميشن نص: welcome to the amazon forest
+		2) ظهور خيارات:
+			 - فتح المينيو
+			 - طلب الويتر
+			 - اطلب الكترونى
+			 - ضع تقييمك
+			 - اقترح علينا
+	- ربط الأزرار:
+		- فتح المينيو -> route('menu')
+		- طلب الويتر -> tel:+966500000000
+		- اطلب الكترونى -> WhatsApp link
+		- ضع تقييمك -> mailto subject
+		- اقترح علينا -> mailto subject
+
+- أنيميشن/ستايل مضاف في app.css:
+	- .qr-stage
+	- .qr-welcome-block
+	- .qr-welcome-text
+	- .qr-actions-wrapper
+	- .qr-action-btn (+ hover shimmer)
+	- keyframes:
+		- qrWelcomeFade
+		- qrWelcomePulse
+		- qrActionsReveal
+
+- الترجمة:
+	- إضافة section جديدة messages.qr في العربية والإنجليزية.
+	- نص welcome محفوظ كما طلب المستخدم: welcome to the amazon forest
+
+- الأوامر التي نُفذت للتحقق:
+	- php artisan route:list --path=qr
+	- npm run build
+
+- النتيجة:
+	- الصفحة الجديدة جاهزة للربط مع QR.
+	- الأنيميشن يعمل، والخيارات تظهر بالتسلسل المطلوب.
+
+20) Entry #14 — مزامنة fallback بعد إضافة صفحة QR
+- الهدف:
+	- ضمان أن نسخة fallback تحتوي أحدث CSS بعد إضافة QR animation.
+- التغييرات:
+	- تحديث public/fallback/app.css و public/fallback/app.js من آخر build.
+- النتيجة:
+	- fallback الإنتاج يعرض صفحة QR بالشكل الصحيح.
+
 15) Entry #9 — إضافة اللغة العربية وجعلها الافتراضية
 - الهدف:
 	- تفعيل اللغة العربية كلغة افتراضية للتطبيق.

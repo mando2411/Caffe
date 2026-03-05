@@ -127,4 +127,15 @@ return [
             ],
         ],
     ],
+
+    'qr' => [
+        'title' => 'THE AMAZON FOREST | تجربة داخل الكافيه',
+        'welcome' => 'welcome to the amazon forest',
+        'subtitle' => 'اختر خدمتك الآن بكل سهولة',
+        'open_menu' => 'فتح المينيو',
+        'call_waiter' => 'طلب الويتر',
+        'order_online' => 'اطلب الكترونى',
+        'rate_us' => 'ضع تقييمك',
+        'suggest_us' => 'اقترح علينا',
+    ],
 ];
